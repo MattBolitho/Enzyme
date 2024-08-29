@@ -1,0 +1,72 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "x64-linux-clang",
+            "description": "Base preset for Linux development using Clang compilers.",
+            "hidden": true,
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_CXX_FLAGS": "-Wall -fno-rtti -Werror=unused-variable -Werror=dangling-else -Werror=unused-but-set-variable -Werror=return-type -Werror=nonnull -Werror=unused-result -Werror=reorder -Werror=switch"
+            },
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "x64-linux-clang-debug",
+            "displayName": "x64 Linux Clang Debug",
+            "inherits": "x64-linux-clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -ggdb -fno-omit-frame-pointer"
+            }
+        },
+        {
+            "name": "x64-linux-clang-release-with-debug",
+            "displayName": "x64 Linux Clang Release with Debug Info",
+            "inherits": "x64-linux-clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -ggdb"
+            }
+        },
+        {
+            "name": "x64-linux-clang-release",
+            "displayName": "x64 Linux Clang Release",
+            "inherits": "x64-linux-clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O2"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "x64-linux-clang-debug",
+            "displayName": "x64 Linux Clang Debug",
+            "description": "Builds the project with Clang compilers in Debug mode.",
+            "configurePreset": "x64-linux-clang-debug"
+        },
+        {
+            "name": "x64-linux-clang-release-with-debug",
+            "displayName": "x64 Linux Clang Release with Debug Info",
+            "description": "Builds the project with Clang compilers in Release mode with debug info.",
+            "configurePreset": "x64-linux-clang-release-with-debug"
+        },
+        {
+            "name": "x64-linux-clang-release",
+            "displayName": "x64 Linux Clang Release",
+            "description": "Builds the project with Clang compilers in Release mode.",
+            "configurePreset": "x64-linux-clang-release"
+        }
+    ]
+}
