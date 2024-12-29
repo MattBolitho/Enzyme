@@ -30,7 +30,7 @@ jobs:
       run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo apt-add-repository "deb http://apt.llvm.org/`lsb_release -c | cut -f2`/ llvm-toolchain-`lsb_release -c | cut -f2`-${{ matrix.llvm }} main" || true
-          sudo apt-get install -y python3-pip autoconf cmake gcc g++ libtool gfortran libblas-dev llvm-${{ matrix.llvm }}-dev clang-${{ matrix.llvm }} libeigen3-dev libboost-dev libzstd-dev
+          sudo apt-get install --no-install-recommends -y python3-pip autoconf cmake gcc g++ libtool gfortran libblas-dev llvm-${{ matrix.llvm }}-dev clang-${{ matrix.llvm }} libeigen3-dev libboost-dev libzstd-dev
           sudo python3 -m pip install lit pathlib
           sudo touch /usr/lib/llvm-${{ matrix.llvm }}/bin/yaml-bench
     - uses: actions/checkout@v4
@@ -38,13 +38,12 @@ jobs:
       run: rm -rf build && mkdir build
     - name: cmake
       working-directory: build
-      run: cmake ../enzyme -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
-    - name: make
+      run: cmake -G Ninja ../enzyme -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
+    - name: Build
+      run: cmake --build build --target LLVMEnzyme-${{ matrix.llvm }}
+    - name: Build bench-enzyme
       working-directory: build
-      run: make -j `nproc` LLVMEnzyme-${{ matrix.llvm }}
-    - name: make bench-enzyme
-      working-directory: build
-      run: make bench-enzyme
+      run: cmake --build build --target bench-enzyme
     - name: results
       run: cat enzyme/benchmarks/*/*/results.txt
     - name: graph results

@@ -21,7 +21,7 @@ jobs:
       run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo apt-add-repository "deb http://apt.llvm.org/`lsb_release -c | cut -f2`/ llvm-toolchain-`lsb_release -c | cut -f2`-${{ matrix.llvm }} main" || true
-          sudo apt-get install -y cmake gcc g++ llvm-${{ matrix.llvm }}-dev clang-${{ matrix.llvm }} libclang-${{ matrix.llvm }}-dev
+          sudo apt-get install --no-install-recommends -y cmake gcc g++ llvm-${{ matrix.llvm }}-dev clang-${{ matrix.llvm }} libclang-${{ matrix.llvm }}-dev
           sudo python3 -m pip install --upgrade pip lit
     - uses: actions/checkout@v4
     - name: mkdir
@@ -29,6 +29,6 @@ jobs:
     - name: cmake
       run: |
           cd enzyme/build
-          cmake .. -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
-    - name: make check-bcpass
-      run: cd enzyme/build && make -j `nproc` check-bcpass
+          cmake .. -G Ninja -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
+    - name: Build check-bcpass
+      run: cmake --build enzyme/build --target check-bcpass
