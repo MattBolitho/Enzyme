@@ -1,6 +1,6 @@
 name: Benchmarking
 
-on: 
+on:
   push:
     branches:
     - main
@@ -8,25 +8,26 @@ on:
     branches:
     - main
   merge_group:
-    
-concurrency: 
+  workflow_dispatch:
+
+concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Benchmark Test on os ${{ matrix.os }} and llvm ${{ matrix.llvm }} mode ${{ matrix.build }} 
+    name: Benchmark Test on os ${{ matrix.os }} and llvm ${{ matrix.llvm }} mode ${{ matrix.build }}
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       fail-fast: false
       matrix:
         llvm: ["16", "17", "18"]
         build: ["Release"] #, "Debug" "RelWithDebInfo"
         os: [] # [openstack22]
-    timeout-minutes: 120 
+    timeout-minutes: 120
     steps:
-    - name: add llvm 
+    - name: add llvm
       run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo apt-add-repository "deb http://apt.llvm.org/`lsb_release -c | cut -f2`/ llvm-toolchain-`lsb_release -c | cut -f2`-${{ matrix.llvm }} main" || true

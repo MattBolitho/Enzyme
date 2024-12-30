@@ -26,6 +26,7 @@ on:
       - 'enzyme/BUILD'
       - 'enzyme/WORKSPACE'
   merge_group:
+  workflow_dispatch:
 
 concurrency:
   # Skip intermediate builds: always.
