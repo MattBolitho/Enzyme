@@ -10,8 +10,9 @@ on:
     branches:
     - main
   merge_group:
+  workflow_dispatch:
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
@@ -19,21 +20,21 @@ jobs:
   build-linux:
     name: Bazel ${{ matrix.build }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       fail-fast: false
       matrix:
         build: ["Release"]
         llbuild: ["Release"]
         os: [ubuntu-latest]
-  
-    timeout-minutes: 500 
+
+    timeout-minutes: 500
     steps:
-    
+
     - name: Prep
       run: |
           python -m pip install lit
-    
+
     - uses: actions/checkout@v4
     - uses: actions/checkout@v4
       with:
