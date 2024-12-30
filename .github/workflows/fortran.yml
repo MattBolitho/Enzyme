@@ -2,13 +2,14 @@ name: Fortran
 
 on:
   push:
-    branches: 
+    branches:
     - main
   pull_request:
-    branches: 
+    branches:
     - main
   merge_group:
-    
+  workflow_dispatch:
+
 jobs:
   build-and-test-fortran:
     name: Fortran ${{matrix.build}} ${{matrix.os}}
@@ -23,7 +24,7 @@ jobs:
           - llvm: 15
             ifx: 2023.0.0
             mpi: 2021.7.1
-    timeout-minutes: 60 
+    timeout-minutes: 60
     steps:
     - name: add llvm
       run: |
@@ -51,4 +52,4 @@ jobs:
     - name: run Fortran tests
       working-directory: 'build'
       run: ninja check-enzyme-fortran
-        
+
