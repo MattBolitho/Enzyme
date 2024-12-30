@@ -65,9 +65,9 @@ jobs:
       working-directory: 'Enzyme'
       run: |
           mkdir enzyme-build && cd enzyme-build
-          cmake ../enzyme -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=${{ github.workspace }}/llvm-project/mlir-build -DENZYME_MLIR=ON
+          cmake ../enzyme -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=${{ github.workspace }}/llvm-project/mlir-build -DENZYME_MLIR=ON
           cmake --build .
 
     - name: Check enzyme-mlir
       working-directory: 'Enzyme/enzyme-build'
-      run: ninja check-enzymemlir
+      run: cmake --build --target check-enzymemlir

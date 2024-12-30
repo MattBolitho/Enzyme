@@ -1,6 +1,6 @@
 name: C/C++ CI
 
-on: 
+on:
   push:
     branches:
     - main
@@ -13,18 +13,18 @@ jobs:
   build:
     name: Integration CI LLVM ${{ matrix.llvm }} ${{ matrix.build }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       fail-fast: false
       matrix:
         llvm: ["15", "16", "17", "18"]
         build: ["Release"] # "RelWithDebInfo"
         os: [ubuntu-20.04]
-    
+
     timeout-minutes: 45
-    
+
     steps:
-    - name: add llvm 
+    - name: add llvm
       run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
           sudo apt-get install--no-install-recommends -y libmpfr-dev
@@ -36,9 +36,9 @@ jobs:
       run: rm -rf build && mkdir build
     - name: cmake
       working-directory: build
-      run: cmake -G Ninja ../enzyme -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
+      run: cmake ../enzyme -G Ninja -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
     - name: Build
-      run: cmake --build build --targets LLVMEnzyme-${{ matrix.llvm }} ClangEnzyme-${{ matrix.llvm }} LLDEnzyme-${{ matrix.llvm }}  
+      run: cmake --build build --targets LLVMEnzyme-${{ matrix.llvm }} ClangEnzyme-${{ matrix.llvm }} LLDEnzyme-${{ matrix.llvm }}
     - name: Build test-cmake
       run: cmake --build build --target test-cmake
     - name: Build check-enzyme-integration

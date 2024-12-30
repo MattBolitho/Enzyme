@@ -2,13 +2,13 @@ name: Fortran
 
 on:
   push:
-    branches: 
+    branches:
     - main
   pull_request:
-    branches: 
+    branches:
     - main
   merge_group:
-    
+
 jobs:
   build-and-test-fortran:
     name: Fortran ${{matrix.build}} ${{matrix.os}}
@@ -23,7 +23,7 @@ jobs:
           - llvm: 15
             ifx: 2023.0.0
             mpi: 2021.7.1
-    timeout-minutes: 60 
+    timeout-minutes: 60
     steps:
     - name: add llvm
       run: |
@@ -44,7 +44,7 @@ jobs:
     - name: generate build system
       run: |
         rm -rf build && mkdir build && cd build
-        cmake ../enzyme -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm -DLLVM_EXTERNAL_LIT=`which lit` -DENZYME_IFX=ON
+        cmake ../enzyme -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm -DLLVM_EXTERNAL_LIT=`which lit` -DENZYME_IFX=ON
     - name: build enzyme
       run: cmake --build build --target LLVMEnzyme-${{ matrix.llvm }}
     - name: run Fortran tests
