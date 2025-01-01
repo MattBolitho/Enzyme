@@ -30,7 +30,7 @@ jobs:
       run: |
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
         sudo apt-add-repository "deb http://apt.llvm.org/`lsb_release -c | cut -f2`/ llvm-toolchain-`lsb_release -c | cut -f2`-${{ matrix.llvm }} main" || true
-        sudo apt-get update && sudo apt-get install --no-install-recommends -y cmake gcc g++ llvm-${{ matrix.llvm }}-dev ninja-build pip
+        sudo apt update && sudo apt install --no-install-recommends -y cmake gcc g++ llvm-${{ matrix.llvm }}-dev ninja-build pip
         sudo python3 -m pip install --upgrade pip lit
     - name: add intel tools
       run: |
@@ -38,7 +38,7 @@ jobs:
         sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
         rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
         sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-        sudo apt-get update && sudo apt-get install --no-install-recommends -y intel-oneapi-compiler-fortran-${{ matrix.ifx }} intel-oneapi-mpi-${{ matrix.mpi }} intel-oneapi-mpi-devel-${{ matrix.mpi }}
+        sudo apt update && sudo apt install --no-install-recommends -y intel-oneapi-compiler-fortran-${{ matrix.ifx }} intel-oneapi-mpi-${{ matrix.mpi }} intel-oneapi-mpi-devel-${{ matrix.mpi }}
         source /opt/intel/oneapi/setvars.sh
         printenv >> $GITHUB_ENV
     - uses: actions/checkout@v4
