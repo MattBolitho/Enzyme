@@ -39,7 +39,7 @@ jobs:
       working-directory: build
       run: cmake ../enzyme -G Ninja -DLLVM_EXTERNAL_LIT=`which lit` -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DLLVM_DIR=/usr/lib/llvm-${{ matrix.llvm }}/lib/cmake/llvm
     - name: Build
-      run: cmake --build build --targets LLVMEnzyme-${{ matrix.llvm }} ClangEnzyme-${{ matrix.llvm }} LLDEnzyme-${{ matrix.llvm }}
+      run: cmake --build build --target LLVMEnzyme-${{ matrix.llvm }} ClangEnzyme-${{ matrix.llvm }} LLDEnzyme-${{ matrix.llvm }}
     - name: Build test-cmake
       run: cmake --build build --target test-cmake
     - name: Build check-enzyme-integration
