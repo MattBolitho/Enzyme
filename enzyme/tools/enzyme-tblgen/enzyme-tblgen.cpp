@@ -2349,6 +2349,7 @@ static void emitDerivatives(const RecordKeeper &recordKeeper, raw_ostream &os,
          << "                    calleeName = \"<Unknown>\";\n"
          << "                }\n"
          << "            }\n"
+#if LLVM_VERSION_MAJOR >= 16
          << "            Value *moduleNameValue = "
             "Builder2.CreateGlobalString(moduleName);\n"
          << "            Value *functionNameValue = "
@@ -2365,6 +2366,24 @@ static void emitDerivatives(const RecordKeeper &recordKeeper, raw_ostream &os,
          << "            Builder2.CreateCall(logFunc, {origValue, "
             "errValue, opcodeNameValue, calleeNameValue, moduleNameValue, "
             "functionNameValue, blockNameValue});\n"
+#else
+         << "            Value *moduleNameValue = "
+            "Builder2.CreateGlobalStringPtr(moduleName);\n"
+         << "            Value *functionNameValue = "
+            "Builder2.CreateGlobalStringPtr(functionName + \" (\" +"
+            "std::to_string(funcIdx) + \")\");\n"
+         << "            Value *blockNameValue = "
+            "Builder2.CreateGlobalStringPtr(blockName + \" (\" +"
+            "std::to_string(blockIdx) + \")\");\n"
+         << "            Value *opcodeNameValue = "
+            "Builder2.CreateGlobalStringPtr(opcodeName + \" (\" "
+            "+std::to_string(instIdx) + \")\");\n"
+         << "            Value *calleeNameValue = "
+            "Builder2.CreateGlobalStringPtr(calleeName);\n"
+         << "            Builder2.CreateCall(logFunc, {origValue, "
+            "errValue, opcodeNameValue, calleeNameValue, moduleNameValue, "
+            "functionNameValue, blockNameValue});\n"
+#endif // LLVM_VERSION_MAJOR >= 16
          << "        }\n";
 
       os << "        setDiffe(&" << origName << ", res, Builder2);\n";

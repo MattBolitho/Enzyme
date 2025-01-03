@@ -84,7 +84,11 @@ void TraceGenerator::visitFunction(Function &F) {
       continue;
 
     auto arg = fn->arg_begin() + i;
+#if LLVM_VERSION_MAJOR >= 16
     auto name = Builder.CreateGlobalString(arg->getName());
+#else
+    auto name = Builder.CreateGlobalStringPtr(arg->getName());
+#endif
 
     auto Outlined = [](IRBuilder<> &OutlineBuilder, TraceUtils *OutlineTutils,
                        ArrayRef<Value *> Arguments) {
@@ -348,8 +352,13 @@ void TraceGenerator::handleArbitraryCall(CallInst &call, CallInst *new_call) {
   }
   case ProbProgMode::Trace: {
     auto trace = tutils->CreateTrace(Builder);
+#if LLVM_VERSION_MAJOR >= 16
     auto address = Builder.CreateGlobalString(
         (call.getName() + "." + called->getName()).str());
+#else
+    auto address = Builder.CreateGlobalStringPtr(
+        (call.getName() + "." + called->getName()).str());
+#endif // LLVM_VERSION_MAJOR >= 16
 
     SmallVector<Value *, 2> args_and_trace(args);
     args_and_trace.push_back(tutils->getLikelihood());
