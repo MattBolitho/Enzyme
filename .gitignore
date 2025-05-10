@@ -4,6 +4,7 @@
 build*
 .idea
 .vscode
+.vs
 enzyme/benchmarks/ReverseMode/*/*.ll
 enzyme/benchmarks/ReverseMode/*/*.bc
 enzyme/benchmarks/ReverseMode/*/*.o
