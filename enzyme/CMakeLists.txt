@@ -18,11 +18,17 @@ add_definitions(-DENZYME_VERSION_PATCH=${ENZYME_PATCH_VERSION})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if (NOT DEFINED ENZYME_CONFIGURED_WITH_PRESETS)
+if (NOT (DEFINED ENZYME_CONFIGURED_WITH_PRESETS OR MSVC))
   set(CMAKE_CXX_FLAGS "-Wall -fno-rtti ${CMAKE_CXX_FLAGS} -Werror=unused-variable -Werror=dangling-else -Werror=unused-but-set-variable -Werror=return-type -Werror=nonnull -Werror=unused-result -Werror=reorder -Werror=switch")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -ggdb")
   set(CMAKE_CXX_FLAGS_RELEASE "-O2")
   set(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g -ggdb -fno-omit-frame-pointer")
+endif()
+
+# Required for the MSVC STL due to macro overriding access modifiers from private to public.
+# This should be removed in future when that is properly addressed.
+if(MSVC)
+  add_compile_definitions(_ALLOW_KEYWORD_MACROS)
 endif()
 
 #SET(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g -fno-omit-frame-pointer -fsanitize=address")
