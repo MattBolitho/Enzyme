@@ -30,6 +30,7 @@
 #include <map>
 #include <set>
 
+#include "llvm/Support/Compiler.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instruction.h"
 
@@ -480,7 +481,7 @@ void minCut(const llvm::DataLayout &DL, llvm::LoopInfo &OrigLI,
             llvm::SetVector<llvm::Value *> &MinReq, const GradientUtils *gutils,
             llvm::TargetLibraryInfo &TLI);
 
-__attribute__((always_inline)) static inline void
+LLVM_ATTRIBUTE_ALWAYS_INLINE static inline void
 forEachDirectInsertUser(llvm::function_ref<void(llvm::Instruction *)> f,
                         const GradientUtils *gutils, llvm::Instruction *IVI,
                         llvm::Value *val, bool useCheck) {
@@ -521,7 +522,7 @@ forEachDirectInsertUser(llvm::function_ref<void(llvm::Instruction *)> f,
   }
 }
 
-__attribute__((always_inline)) static inline void
+LLVM_ATTRIBUTE_ALWAYS_INLINE static inline void
 forEachDifferentialUser(llvm::function_ref<void(llvm::Value *)> f,
                         const GradientUtils *gutils, llvm::Value *V,
                         bool useCheck = false) {
