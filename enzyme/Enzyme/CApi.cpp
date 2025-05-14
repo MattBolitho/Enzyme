@@ -1028,7 +1028,9 @@ struct MyAttributorLegacyPass : public ModulePass {
     AU.addRequired<TargetLibraryInfoWrapperPass>();
   }
 };
-extern "C++" char MyAttributorLegacyPass::ID = 0;
+
+char MyAttributorLegacyPass::ID = 0;
+
 void EnzymeAddAttributorLegacyPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(new MyAttributorLegacyPass());
 }
