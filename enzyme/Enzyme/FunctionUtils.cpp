@@ -29,6 +29,7 @@
 #include "GradientUtils.h"
 #include "LibraryFuncs.h"
 
+#include "llvm/Support/Compiler.h"
 #include "llvm/IR/Attributes.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DebugInfoMetadata.h"
@@ -6489,7 +6490,7 @@ return true;
     }
 */
   }
-  __attribute__((noinline)) void dump() const { llvm::errs() << *this << "\n"; }
+  LLVM_ATTRIBUTE_NOINLINE void dump() const { llvm::errs() << *this << "\n"; }
   InnerTy notB(const ConstraintContext &ctx) const {
     switch (ty) {
     case Type::None:
