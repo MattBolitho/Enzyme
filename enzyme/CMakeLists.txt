@@ -25,17 +25,19 @@ if (NOT (DEFINED ENZYME_CONFIGURED_WITH_PRESETS OR MSVC))
   set(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g -ggdb -fno-omit-frame-pointer")
 endif()
 
-# Required for the MSVC STL due to macro overriding access modifiers from private to public.
-# This should be removed in future when that is properly addressed.
-if(MSVC)
-  add_compile_definitions(_ALLOW_KEYWORD_MACROS)
-endif()
-
 #SET(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g -fno-omit-frame-pointer -fsanitize=address")
 #SET(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if (MSVC)
+  # Required for `#define private public` workaround for inheriting from ScalarEvoluaiton when using the MSVC STL.
+  # This should be removed as soon as that workaround is dealt with.
+  add_compile_definitions(_ALLOW_KEYWORD_MACROS)
+
+  add_compile_options(/std:c++20)
+endif()
 
 option(ENZYME_ENABLE_PLUGINS "Enable Clang/LLD/Opt plugins" ON)
 option(ENZYME_CLANG "Build enzyme clang plugin" ON)
