@@ -885,7 +885,7 @@ Value *GradientUtils::unwrapM(Value *const val, IRBuilder<> &BuilderM,
     }
 
 #define getOpFullest(Builder, vtmp, frominst, lookupInst, check)               \
-  ({                                                                           \
+  [&](){                                                                       \
     Value *v = vtmp;                                                           \
     BasicBlock *origParent = frominst;                                         \
     Value *___res;                                                             \
@@ -930,29 +930,29 @@ Value *GradientUtils::unwrapM(Value *const val, IRBuilder<> &BuilderM,
           assert(___res->getType() == v->getType() && "lu");                   \
       }                                                                        \
     }                                                                          \
-    ___res;                                                                    \
-  })
+    return ___res;                                                             \
+  }()
 #define getOpFull(Builder, vtmp, frominst)                                     \
-  ({                                                                           \
+  [&](){                                                                       \
     BasicBlock *parent = scope;                                                \
     if (parent == nullptr)                                                     \
       if (auto originst = dyn_cast<Instruction>(val))                          \
         parent = originst->getParent();                                        \
-    getOpFullest(Builder, vtmp, frominst, parent, true);                       \
-  })
+    return getOpFullest(Builder, vtmp, frominst, parent, true);                \
+  }()
 #define getOpUnchecked(vtmp)                                                   \
-  ({                                                                           \
+  [&](){                                                                       \
     BasicBlock *parent = scope;                                                \
-    getOpFullest(BuilderM, vtmp, parent, parent, false);                       \
-  })
+    return getOpFullest(BuilderM, vtmp, parent, parent, false);                \
+  }()
 #define getOp(vtmp)                                                            \
-  ({                                                                           \
+  [&](){                                                                       \
     BasicBlock *parent = scope;                                                \
     if (parent == nullptr)                                                     \
       if (auto originst = dyn_cast<Instruction>(val))                          \
         parent = originst->getParent();                                        \
-    getOpFullest(BuilderM, vtmp, parent, parent, true);                        \
-  })
+    return getOpFullest(BuilderM, vtmp, parent, parent, true);                 \
+  }()
 
   if (isa<Argument>(val) || isa<Constant>(val)) {
     return val;
