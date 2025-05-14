@@ -4781,22 +4781,22 @@ Constant *GradientUtils::GetOrCreateShadowFunction(
         /*forceAnonymousTape*/ true, runtimeActivity, width, AtomicAdd);
     Constant *newf = Logic.CreatePrimalAndGradient(
         context,
-        (ReverseCacheKey){.todiff = fn,
-                          .retType = retType,
-                          .constant_args = types,
-                          .subsequent_calls_may_write =
-                              subsequent_calls_may_write,
-                          .overwritten_args = overwritten_args,
-                          .returnUsed = false,
-                          .shadowReturnUsed = false,
-                          .mode = DerivativeMode::ReverseModeGradient,
-                          .width = width,
-                          .freeMemory = true,
-                          .AtomicAdd = AtomicAdd,
-                          .additionalType = getInt8PtrTy(fn->getContext()),
-                          .forceAnonymousTape = true,
-                          .typeInfo = type_args,
-                          .runtimeActivity = runtimeActivity},
+        ReverseCacheKey{.todiff = fn,
+                         .retType = retType,
+                         .constant_args = types,
+                         .subsequent_calls_may_write =
+                             subsequent_calls_may_write,
+                         .overwritten_args = overwritten_args,
+                         .returnUsed = false,
+                         .shadowReturnUsed = false,
+                         .mode = DerivativeMode::ReverseModeGradient,
+                         .width = width,
+                         .freeMemory = true,
+                         .AtomicAdd = AtomicAdd,
+                         .additionalType = getInt8PtrTy(fn->getContext()),
+                         .forceAnonymousTape = true,
+                         .typeInfo = type_args,
+                         .runtimeActivity = runtimeActivity},
         TA,
         /*map*/ &augdata);
     assert(newf);

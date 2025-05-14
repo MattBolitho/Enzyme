@@ -634,7 +634,7 @@ LLVMValueRef EnzymeCreatePrimalAndGradient(
   return wrap(eunwrap(Logic).CreatePrimalAndGradient(
       RequestContext(cast_or_null<Instruction>(unwrap(request_req)),
                      unwrap(request_ip)),
-      (ReverseCacheKey){
+      ReverseCacheKey{
           .todiff = cast<Function>(unwrap(todiff)),
           .retType = (DIFFE_TYPE)retType,
           .constant_args = nconstant_args,
