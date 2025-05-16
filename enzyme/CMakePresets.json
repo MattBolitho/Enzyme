@@ -12,6 +12,7 @@
                 "CMAKE_CXX_STANDARD": "17",
                 "CMAKE_CXX_STANDARD_REQUIRED": "ON",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CXX_EXTENSIONS": "ON",
                 "ENZYME_CONFIGURED_WITH_PRESETS": "ON"
             }
         },
@@ -186,7 +187,8 @@
             "hidden": true,
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
-                "CMAKE_CXX_COMPILER": "cl.exe"
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_CXX_STANDARD": "20"
             }
         },
         {
@@ -203,6 +205,14 @@
             "inherits": "x64-windows-msvc",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "x64-windows-msvc-release-with-debug-info",
+            "displayName": "MSVC x64 Windows Release with Debug Info",
+            "inherits": "x64-windows-msvc",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         }
     ],
@@ -260,6 +270,24 @@
             "displayName": "Intel x64 Linux Release with Debug Info",
             "description": "Builds the project using Intel oneAPI compilers on Linux in Release configuration with debug info.",
             "configurePreset": "x64-linux-intel-release-with-debug-info"
+        },
+        {
+            "name": "x64-windows-msvc-debug",
+            "displayName": "MSVC x64 Windows Debug",
+            "description": "Builds the project using MSVC on Windows in Debug configuration.",
+            "configurePreset": "x64-windows-msvc-debug"
+        },
+        {
+            "name": "x64-windows-msvc-release",
+            "displayName": "MSVC x64 Windows Release",
+            "description": "Builds the project using MSVC on Windows in Release configuration.",
+            "configurePreset": "x64-windows-msvc-release"
+        },
+        {
+            "name": "x64-windows-msvc-release-with-debug-info",
+            "displayName": "MSVC x64 Windows Release with Debug Info",
+            "description": "Builds the project using MSVC on Windows in Release configuration with debug info.",
+            "configurePreset": "x64-windows-msvc-release-with-debug-info"
         }
     ]
 }

@@ -21,6 +21,7 @@ template<typename Return, typename... T>
 Return __enzyme_fwddiff(T...);
 
 #include <enzyme/tuple>
+#include "llvm/Support/Compiler.h"
 
 namespace enzyme {
 
@@ -217,97 +218,97 @@ namespace enzyme {
     };
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_args(const enzyme::Duplicated<T> & arg) {
         return enzyme::tuple{enzyme_dup, arg.value, arg.shadow};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_args(const enzyme::DuplicatedNoNeed<T> & arg) {
         return enzyme::tuple{enzyme_dupnoneed, arg.value, arg.shadow};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_args(const enzyme::Active<T> & arg) {
         return enzyme::tuple<int, T>{enzyme_out, arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_args(const enzyme::Const<T> & arg) {
         return enzyme::tuple{enzyme_const, arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_primals(const enzyme::Duplicated<T> & arg) {
         return enzyme::tuple{enzyme_dup, arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_primals(const enzyme::DuplicatedNoNeed<T> & arg) {
         return enzyme::tuple{enzyme_dupnoneed, arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_primals(const enzyme::Active<T> & arg) {
         return enzyme::tuple<int, T>{enzyme_out, arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_primals(const enzyme::Const<T> & arg) {
         return enzyme::tuple{enzyme_const, arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_shadows(const enzyme::Duplicated<T> & arg) {
         return enzyme::tuple{arg.shadow};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_shadows(const enzyme::DuplicatedNoNeed<T> & arg) {
         return enzyme::tuple{arg.shadow};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_shadows(const enzyme::Active<T> & arg) {
         return enzyme::tuple{};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto expand_shadows(const enzyme::Const<T> & arg) {
         return enzyme::tuple{};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto primal_args(const enzyme::Duplicated<T> & arg) {
         return enzyme::tuple<T>{arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto primal_args(const enzyme::DuplicatedNoNeed<T> & arg) {
         return enzyme::tuple<T>{arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto primal_args(const enzyme::Active<T> & arg) {
         return enzyme::tuple<T>{arg.value};
     }
 
     template < typename T >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto primal_args(const enzyme::Const<T> & arg) {
         return enzyme::tuple<T>{arg.value};
     }
@@ -338,17 +339,17 @@ namespace enzyme {
 
 
         template<typename T>
-        __attribute__((always_inline))
+        LLVM_ATTRIBUTE_ALWAYS_INLINE
         constexpr decltype(auto) push_return_last(T &&t);
 
         template<typename ...T>
-        __attribute__((always_inline))
+        LLVM_ATTRIBUTE_ALWAYS_INLINE
         constexpr decltype(auto) push_return_last(tuple<tuple<T...>> &&t) {
           return tuple<tuple<T...>>{get<0>(t)};
         }
 
         template<typename ...T, typename R>
-        __attribute__((always_inline))
+        LLVM_ATTRIBUTE_ALWAYS_INLINE
         constexpr decltype(auto) push_return_last(tuple<R, tuple<T...>> &&t) {
           return tuple{get<1>(t), get<0>(t)};
         }
@@ -359,7 +360,7 @@ namespace enzyme {
         template <bool Mode>
         struct autodiff_apply<ReverseMode<Mode>> {
         template <class return_type, class Tuple, std::size_t... I, typename... ExtraArgs>
-        __attribute__((always_inline))
+        LLVM_ATTRIBUTE_ALWAYS_INLINE
         static constexpr decltype(auto) impl(void* f, int* ret_attr, Tuple&& t, std::index_sequence<I...>, ExtraArgs... args) {
             return push_return_last(__enzyme_autodiff<return_type>(f, ret_attr, args..., enzyme::get<I>(impl::forward<Tuple>(t))...));
         }
@@ -368,14 +369,14 @@ namespace enzyme {
         template <>
         struct autodiff_apply<ForwardMode> {
         template <class return_type, class Tuple, std::size_t... I, typename... ExtraArgs>
-        __attribute__((always_inline))
+        LLVM_ATTRIBUTE_ALWAYS_INLINE
         static constexpr return_type impl(void* f, int* ret_attr, Tuple&& t, std::index_sequence<I...>, ExtraArgs... args) {
             return __enzyme_fwddiff<return_type>(f, ret_attr, args..., enzyme::get<I>(impl::forward<Tuple>(t))...);
         }
         };
 
         template <typename function, class Tuple, std::size_t... I>
-        __attribute__((always_inline))
+        LLVM_ATTRIBUTE_ALWAYS_INLINE
         constexpr decltype(auto) primal_apply_impl(function &&f, Tuple&& t, std::index_sequence<I...>) {
             return f(enzyme::get<I>(impl::forward<Tuple>(t))...);
         }
@@ -478,7 +479,7 @@ namespace enzyme {
     }  // namespace detail
 
     template < typename return_type, typename function, typename ... enz_arg_types >
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto primal_impl(function && f, enzyme::tuple< enz_arg_types ... > && arg_tup) {
       using Tuple = enzyme::tuple< enz_arg_types ... >;
       return detail::primal_apply_impl<return_type>(std::move(f), impl::forward<Tuple>(arg_tup), std::make_index_sequence<enzyme::tuple_size_v<Tuple>>{});
@@ -490,7 +491,7 @@ namespace enzyme {
     }
 
     template < typename return_type, typename DiffMode, typename function, typename functy, typename RetActivity, typename ... enz_arg_types, std::enable_if_t<!detail::is_function_or_function_ptr<typename remove_cvref< function >::type>::value, int> = 0>
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto autodiff_impl(function && f, enzyme::tuple< enz_arg_types ... > && arg_tup) {
       using Tuple = enzyme::tuple< enz_arg_types ... >;
       return detail::autodiff_apply<DiffMode>::template impl<return_type>((void*)&detail::templated_call<function, functy>::wrap, detail::ret_global<RetActivity>::value,
@@ -499,14 +500,14 @@ namespace enzyme {
     }
 
     template < typename return_type, typename DiffMode, typename function, typename functy, typename RetActivity, typename ... enz_arg_types, std::enable_if_t<detail::is_function_or_function_ptr<typename remove_cvref< function >::type>::value, int> = 0>
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto autodiff_impl(function && f, enzyme::tuple< enz_arg_types ... > && arg_tup) {
       using Tuple = enzyme::tuple< enz_arg_types ... >;
       return detail::autodiff_apply<DiffMode>::template impl<return_type>((void*)static_cast<functy*>(f), detail::ret_global<RetActivity>::value, impl::forward<Tuple>(arg_tup), std::make_index_sequence<enzyme::tuple_size_v<Tuple>>{});
     }
 
     template < typename DiffMode, typename RetActivity, typename function, typename ... arg_types>
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto autodiff(function && f, arg_types && ... args) {
         static_assert(
             detail::verify_dup_args<DiffMode, arg_types...>::value,
@@ -520,7 +521,7 @@ namespace enzyme {
     }
 
     template < typename DiffMode, typename function, typename ... arg_types>
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     auto autodiff(function && f, arg_types && ... args) {
         static_assert(
             detail::verify_dup_args<DiffMode, arg_types...>::value,

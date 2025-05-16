@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include "llvm/Support/Compiler.h"
 
 namespace enzyme {
 
@@ -20,7 +21,7 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 
 namespace impl {
   template<typename _Tp>
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     constexpr _Tp&&
     forward(std::remove_reference_t<_Tp>& __t) noexcept
     { return static_cast<_Tp&&>(__t); }
@@ -32,7 +33,7 @@ namespace impl {
    *  This function is used to implement "perfect forwarding".
    */
   template<typename _Tp>
-    __attribute__((always_inline))
+    LLVM_ATTRIBUTE_ALWAYS_INLINE
     constexpr _Tp&&
     forward(std::remove_reference_t<_Tp>&& __t) noexcept
     {

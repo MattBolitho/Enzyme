@@ -16,6 +16,7 @@
 #include <utility> // for std::integer_sequence
 
 #include <enzyme/type_traits>
+#include "llvm/Support/Compiler.h"
 
 #define _NOEXCEPT noexcept
 namespace enzyme {
@@ -28,10 +29,10 @@ struct Index {};
 
 template <int i, typename T>
 struct value_at_position {
-  __attribute__((always_inline))
+  LLVM_ATTRIBUTE_ALWAYS_INLINE
   T & operator[](Index<i>) { return value; }
 
-  __attribute__((always_inline))
+  LLVM_ATTRIBUTE_ALWAYS_INLINE
   constexpr const T & operator[](Index<i>) const { return value; }
   T value;
 };
@@ -49,11 +50,11 @@ template <typename... T>
 struct tuple : public tuple_base<std::make_integer_sequence<int, sizeof...(T)>, T...> {};
 
 template <typename... T>
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 tuple(T ...) -> tuple<T...>;
 
 template < int i, typename Tuple >
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 decltype(auto) get(Tuple && tup) {
   constexpr bool is_lvalue = std::is_lvalue_reference_v<Tuple>;
   constexpr bool is_const = std::is_const_v<std::remove_reference_t<Tuple>>;
@@ -65,7 +66,7 @@ decltype(auto) get(Tuple && tup) {
 }
 
 template < int i, typename ... T>
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 decltype(auto) get(const tuple< T ... > & tup) {
     return tup[Index<i>{} ];
 }
@@ -80,7 +81,7 @@ template <typename Tuple>
 static constexpr std::size_t tuple_size_v = tuple_size<Tuple>::value;
 
 template <typename... T>
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 constexpr auto forward_as_tuple(T&&... args) noexcept {
   return tuple<T&&...>{impl::forward<T>(args)...};
 }
@@ -93,7 +94,7 @@ struct make_tuple_from_fwd_tuple;
 template <std::size_t... indices>
 struct make_tuple_from_fwd_tuple<std::index_sequence<indices...>> {
   template <typename FWD_TUPLE>
-  __attribute__((always_inline))
+  LLVM_ATTRIBUTE_ALWAYS_INLINE
   static constexpr auto f(FWD_TUPLE&& fwd) {
     return tuple{get<indices>(impl::forward<FWD_TUPLE>(fwd))...};
   }
@@ -108,20 +109,20 @@ using iseq = std::make_index_sequence<tuple_size_v< enzyme::remove_cvref_t< Tupl
 template <std::size_t... fwd_indices, std::size_t... indices>
 struct concat_with_fwd_tuple<std::index_sequence<fwd_indices...>, std::index_sequence<indices...>> {
   template <typename FWD_TUPLE, typename TUPLE>
-  __attribute__((always_inline))
+  LLVM_ATTRIBUTE_ALWAYS_INLINE
   static constexpr auto f(FWD_TUPLE&& fwd, TUPLE&& t) {
     return enzyme::forward_as_tuple(get<fwd_indices>(impl::forward<FWD_TUPLE>(fwd))..., get<indices>(impl::forward<TUPLE>(t))...);
   }
 };
 
 template <typename Tuple>
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 static constexpr auto tuple_cat(Tuple&& ret) {
   return make_tuple_from_fwd_tuple< iseq< Tuple > >::f(impl::forward< Tuple >(ret));
 }
 
 template <typename FWD_TUPLE, typename first, typename... rest>
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 static constexpr auto tuple_cat(FWD_TUPLE&& fwd, first&& t, rest&&... ts) {
   return tuple_cat(concat_with_fwd_tuple< iseq<FWD_TUPLE>, iseq<first> >::f(impl::forward<FWD_TUPLE>(fwd), impl::forward<first>(t)), impl::forward<rest>(ts)...);
 }
@@ -129,7 +130,7 @@ static constexpr auto tuple_cat(FWD_TUPLE&& fwd, first&& t, rest&&... ts) {
 }  // namespace impl
 
 template <typename... Tuples>
-__attribute__((always_inline))
+LLVM_ATTRIBUTE_ALWAYS_INLINE
 constexpr auto tuple_cat(Tuples&&... tuples) {
   return impl::tuple_cat(impl::forward<Tuples>(tuples)...);
 }

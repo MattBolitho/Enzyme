@@ -1029,7 +1029,9 @@ struct MyAttributorLegacyPass : public ModulePass {
   }
 };
 
+extern "C++" {
 char MyAttributorLegacyPass::ID = 0;
+}
 
 void EnzymeAddAttributorLegacyPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(new MyAttributorLegacyPass());

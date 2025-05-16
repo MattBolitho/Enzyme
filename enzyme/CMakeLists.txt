@@ -30,13 +30,13 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
-if (MSVC)
-  # Required for `#define private public` workaround for inheriting from ScalarEvoluaiton when using the MSVC STL.
-  # This should be removed as soon as that workaround is dealt with.
-  add_compile_definitions(_ALLOW_KEYWORD_MACROS)
-
-  add_compile_options(/std:c++20)
+if(MSVC)
+    # This is currently required due to the use of `#define private public` to access
+    # scalar evolution internals within MustExitScalarEvolution. If/when that changes,
+    # this should be deleted.
+    add_definitions(-D_ALLOW_KEYWORD_MACROS)
 endif()
 
 option(ENZYME_ENABLE_PLUGINS "Enable Clang/LLD/Opt plugins" ON)
@@ -341,10 +341,10 @@ endif()
 endif()
 
 if (${ENZYME_FLANG} AND ${Clang_FOUND})
-	add_custom_target(link_target ALL
+    add_custom_target(link_target ALL
   COMMAND ${CMAKE_COMMAND} -E create_symlink
-	  ClangEnzyme-${LLVM_VERSION_MAJOR}${LLVM_SHLIBEXT}
-	  ${PROJECT_BINARY_DIR}/Enzyme/FlangEnzyme-${LLVM_VERSION_MAJOR}${LLVM_SHLIBEXT}
+      ClangEnzyme-${LLVM_VERSION_MAJOR}${LLVM_SHLIBEXT}
+      ${PROJECT_BINARY_DIR}/Enzyme/FlangEnzyme-${LLVM_VERSION_MAJOR}${LLVM_SHLIBEXT}
   )
 endif()
 

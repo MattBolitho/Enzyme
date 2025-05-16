@@ -71,9 +71,9 @@ static cl::opt<ActionType>
            cl::values(clEnumValN(CallDerivatives, "gen-call-derivatives",
                                  "Generate call derivative")));
 
-void getFunction(const Twine &curIndent, raw_ostream &os, StringRef callval,
-                 StringRef FT, StringRef cconv, const Init *func,
-                 StringRef origName) {
+static void getFunction(const Twine &curIndent, raw_ostream &os, StringRef callval,
+                        StringRef FT, StringRef cconv, const Init *func,
+                        StringRef origName) {
   if (auto resultRoot = dyn_cast<DagInit>(func)) {
     auto opName = resultRoot->getOperator()->getAsString();
     auto Def = cast<DefInit>(resultRoot->getOperator())->getDef();
@@ -147,8 +147,8 @@ void getFunction(const Twine &curIndent, raw_ostream &os, StringRef callval,
   }
   assert(0 && "Unhandled function");
 }
-void getIntrinsic(raw_ostream &os, StringRef intrName, const ListInit *typeInit,
-                  const Twine &argStr, StringRef origName) {
+static void getIntrinsic(raw_ostream &os, StringRef intrName, const ListInit *typeInit,
+                         const Twine &argStr, StringRef origName) {
   os << "getIntrinsicDeclaration(mod, Intrinsic::" << intrName
      << ", std::vector<Type*>({";
   bool first = true;
@@ -162,7 +162,7 @@ void getIntrinsic(raw_ostream &os, StringRef intrName, const ListInit *typeInit,
   os << "}))";
 }
 
-raw_ostream &operator<<(raw_ostream &os, StringMap<std::string> &C) {
+static raw_ostream &operator<<(raw_ostream &os, StringMap<std::string> &C) {
   os << "{";
   bool first = true;
   for (auto &pair : C) {
@@ -174,9 +174,9 @@ raw_ostream &operator<<(raw_ostream &os, StringMap<std::string> &C) {
   return os << "}";
 }
 
-void initializeNames(const Twine &curIndent, raw_ostream &os,
-                     const Init *resultTree, const Twine &prefix,
-                     ActionType intrinsic) {
+static void initializeNames(const Twine &curIndent, raw_ostream &os,
+                            const Init *resultTree, const Twine &prefix,
+                            ActionType intrinsic) {
   if (auto resultRoot = dyn_cast<DagInit>(resultTree)) {
     for (size_t i = 0; i < resultRoot->arg_size(); i++) {
       auto arg = resultRoot->getArg(i);
@@ -236,18 +236,18 @@ struct VariableSetting {
 };
 
 #define INDENT "  "
-bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
-            const Record *pattern, const Init *resultTree, StringRef builder,
-            VariableSetting &nameToOrdinal, bool lookup,
-            ArrayRef<unsigned> retidx, StringRef origName, bool newFromOriginal,
-            ActionType intrinsic);
+static bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
+                   const Record *pattern, const Init *resultTree, StringRef builder,
+                   VariableSetting &nameToOrdinal, bool lookup,
+                   ArrayRef<unsigned> retidx, StringRef origName, bool newFromOriginal,
+                   ActionType intrinsic);
 
-SmallVector<bool, 1> prepareArgs(const Twine &curIndent, raw_ostream &os,
-                                 const Twine &argName, const Record *pattern,
-                                 const DagInit *resultRoot, StringRef builder,
-                                 VariableSetting &nameToOrdinal, bool lookup,
-                                 ArrayRef<unsigned> retidx, StringRef origName,
-                                 bool newFromOriginal, ActionType intrinsic) {
+static SmallVector<bool, 1> prepareArgs(const Twine &curIndent, raw_ostream &os,
+                                        const Twine &argName, const Record *pattern,
+                                        const DagInit *resultRoot, StringRef builder,
+                                        VariableSetting &nameToOrdinal, bool lookup,
+                                        ArrayRef<unsigned> retidx, StringRef origName,
+                                        bool newFromOriginal, ActionType intrinsic) {
   SmallVector<bool, 1> vectorValued;
 
   size_t idx = 0;
@@ -467,7 +467,7 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
         PrintFatalError(pattern->getLoc(),
                         "only two/three op StaticSelect supported");
 
-      os << "({\n";
+      os << "[&](){\n";
       os << curIndent << INDENT << "// Computing " << opName << "\n";
       if (intrinsic == MLIRDerivatives)
         os << curIndent << INDENT << "mlir::Value imVal = ";
@@ -578,8 +578,8 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
         os << curIndent << INDENT << "}\n";
       }
 
-      os << curIndent << INDENT << "imVal;\n";
-      os << curIndent << INDENT << "})";
+      os << curIndent << INDENT << "return imVal;\n";
+      os << curIndent << INDENT << "}()";
 
       return any_vector;
     } else if (opName == "ConstantFP" || Def->isSubClassOf("ConstantFP")) {
@@ -1048,7 +1048,7 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
       return anyVector;
     } else if (Def->isSubClassOf("Inst")) {
 
-      os << "({\n";
+      os << "[&](){\n";
       os << curIndent << INDENT << "// Computing " << opName << "\n";
       SmallVector<bool, 1> vectorValued = prepareArgs(
           curIndent + INDENT, os, argPattern, pattern, resultRoot, builder,
@@ -1078,6 +1078,8 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
         os << "CallInst *V = ";
       } else if (anyVector && intrinsic != MLIRDerivatives) {
         os << "Value *V = ";
+      } else {
+        os << "return ";
       }
 
       if (isCall) {
@@ -1102,7 +1104,7 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
         os << builder << ".create<" << dialect << "::" << opName
            << ">(op.getLoc(), ";
       } else {
-        os << builder << ".Create" << opName << "(";
+        os << "" << builder << ".Create" << opName << "(";
       }
       for (size_t i = 0; i < vectorValued.size(); i++) {
         if (i > 0)
@@ -1201,11 +1203,11 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
            << ".CreateInsertValue(res, V, {idx});\n";
         os << curIndent << INDENT << INDENT << "}\n";
         os << curIndent << INDENT "}\n";
-        os << curIndent << INDENT << "res;\n";
+        os << curIndent << INDENT << "return res;\n";
       } else if (isCall)
-        os << curIndent << INDENT << "V;\n";
+        os << curIndent << INDENT << "return V;\n";
 
-      os << curIndent << "})";
+      os << curIndent << "}()";
       return anyVector;
     }
     errs() << *resultRoot << "\n";
@@ -1214,8 +1216,8 @@ bool handle(const Twine &curIndent, const Twine &argPattern, raw_ostream &os,
   PrintFatalError(pattern->getLoc(), Twine("unknown operation"));
 }
 
-std::string ReplaceAll(std::string str, const std::string &from,
-                       const std::string &to) {
+static std::string ReplaceAll(std::string str, const std::string &from,
+                              const std::string &to) {
   size_t start_pos = 0;
   while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
     str.replace(start_pos, from.length(), to);
@@ -1225,14 +1227,14 @@ std::string ReplaceAll(std::string str, const std::string &from,
   return str;
 }
 
-void handleUse(
+static void handleUse(
     const DagInit *root, const DagInit *resultTree, std::string &foundPrimalUse,
     std::string &foundShadowUse, bool &foundDiffRet, std::string precondition,
     const DagInit *tree,
     StringMap<std::tuple<std::string, std::string, bool>> &varNameToCondition,
     const VariableSetting &nameToOrdinal);
 
-void handleUseArgument(
+static void handleUseArgument(
     StringRef name, const Init *arg, bool usesPrimal, bool usesShadow,
     const DagInit *root, const DagInit *resultTree, std::string &foundPrimalUse,
     std::string &foundShadowUse, bool &foundDiffRet, std::string precondition,
@@ -1482,7 +1484,7 @@ static VariableSetting parseVariables(const DagInit *tree, ActionType intrinsic,
   return nameToOrdinal;
 }
 
-void printDiffUse(
+static void printDiffUse(
     raw_ostream &os, Twine prefix, const ListInit *argOps, StringRef origName,
     ActionType intrinsic, const DagInit *tree,
     StringMap<std::tuple<std::string, std::string, bool>> &varNameToCondition) {
@@ -2977,7 +2979,7 @@ void emitDiffUse(const RecordKeeper &recordKeeper, raw_ostream &os,
 #include "blasDiffUseUpdater.h"
 #include "blasTAUpdater.h"
 
-void emitMLIRDerivatives(RecordKeeper &records, raw_ostream &os);
+static void emitMLIRDerivatives(RecordKeeper &records, raw_ostream &os);
 
 #if LLVM_VERSION_MAJOR >= 20
 static bool EnzymeTableGenMain(raw_ostream &os, const RecordKeeper &records)

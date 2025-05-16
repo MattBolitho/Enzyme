@@ -14,3 +14,4 @@ enzyme/benchmarks/ReverseMode/*/results.json
 .cache
 CMakeUserPresets.json
 /out
+*.suo
