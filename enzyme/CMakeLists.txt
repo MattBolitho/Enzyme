@@ -30,7 +30,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
 
 if(MSVC)
     # This is currently required due to the use of `#define private public` to access

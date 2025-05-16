@@ -566,8 +566,8 @@ public:
   llvm::Value *applyChainRule(llvm::Type *diffType, llvm::IRBuilder<> &Builder,
                               Func rule, Args... args) {
     if (width > 1) {
-      const int size = sizeof...(args);
-      llvm::Value *vals[size] = {args...};
+      constexpr int size = sizeof...(args);
+      std::array<llvm::Value *, size> vals = {args...};
 
       for (size_t i = 0; i < size; ++i)
         if (vals[i])
