@@ -1775,22 +1775,22 @@ public:
       assert(freeMemory);
       newFunc = Logic.CreatePrimalAndGradient(
           context,
-          ReverseCacheKey{.todiff = fn,
-                          .retType = retType,
-                          .constant_args = constants,
-                          .subsequent_calls_may_write =
+          ReverseCacheKey{/*.todiff = */fn,
+                          /*.retType = */retType,
+                          /*.constant_args = */constants,
+                          /*.subsequent_calls_may_write =*/
                               subsequent_calls_may_write,
-                          .overwritten_args = overwritten_args,
-                          .returnUsed = primalReturn,
-                          .shadowReturnUsed = false,
-                          .mode = mode,
-                          .width = width,
-                          .freeMemory = freeMemory,
-                          .AtomicAdd = AtomicAdd,
-                          .additionalType = nullptr,
-                          .forceAnonymousTape = false,
-                          .typeInfo = type_args,
-                          .runtimeActivity = options.runtimeActivity},
+                          /*.overwritten_args = */overwritten_args,
+                          /*.returnUsed = */primalReturn,
+                          /*.shadowReturnUsed = */false,
+                          /*.mode = */mode,
+                          /*.width = */width,
+                          /*.freeMemory = */freeMemory,
+                          /*.AtomicAdd = */AtomicAdd,
+                          /*.additionalType = */nullptr,
+                          /*.forceAnonymousTape = */false,
+                          /*.typeInfo = */type_args,
+                          /*.runtimeActivity = */options.runtimeActivity},
           TA, /*augmented*/ nullptr);
       break;
     case DerivativeMode::ReverseModePrimal:
@@ -1845,22 +1845,22 @@ public:
       else
         newFunc = Logic.CreatePrimalAndGradient(
             context,
-            ReverseCacheKey{.todiff = fn,
-                            .retType = retType,
-                            .constant_args = constants,
-                            .subsequent_calls_may_write =
+            ReverseCacheKey{/*.todiff = */fn,
+                            /*.retType = */retType,
+                            /*.constant_args = */constants,
+                            /*.subsequent_calls_may_write =*/
                                 subsequent_calls_may_write,
-                            .overwritten_args = overwritten_args,
-                            .returnUsed = false,
-                            .shadowReturnUsed = false,
-                            .mode = mode,
-                            .width = width,
-                            .freeMemory = freeMemory,
-                            .AtomicAdd = AtomicAdd,
-                            .additionalType = tapeType,
-                            .forceAnonymousTape = forceAnonymousTape,
-                            .typeInfo = type_args,
-                            .runtimeActivity = options.runtimeActivity},
+                            /*.overwritten_args = */overwritten_args,
+                            /*.returnUsed = */false,
+                            /*.shadowReturnUsed = */false,
+                            /*.mode = */mode,
+                            /*.width = */width,
+                            /*.freeMemory = */freeMemory,
+                            /*.AtomicAdd = */AtomicAdd,
+                            /*.additionalType = */tapeType,
+                            /*.forceAnonymousTape = */forceAnonymousTape,
+                            /*.typeInfo = */type_args,
+                            /*.runtimeActivity = */options.runtimeActivity},
             TA, aug);
     }
     }
@@ -3613,18 +3613,18 @@ void augmentPassBuilder(llvm::PassBuilder &PB) {
     // Do a post inline PGO instrumentation and use pass. This is a context
     // sensitive PGO pass.
 #if 0
-		  if (PGOOpt) {
-			if (PGOOpt->CSAction == PGOOptions::CSIRInstr)
-			  addPGOInstrPasses(MPM, Level, /* RunProfileGen */ true,
-								/* IsCS */ true, PGOOpt->CSProfileGenFile,
-								PGOOpt->ProfileRemappingFile,
-								ThinOrFullLTOPhase::FullLTOPostLink, PGOOpt->FS);
-			else if (PGOOpt->CSAction == PGOOptions::CSIRUse)
-			  addPGOInstrPasses(MPM, Level, /* RunProfileGen */ false,
-								/* IsCS */ true, PGOOpt->ProfileFile,
-								PGOOpt->ProfileRemappingFile,
-								ThinOrFullLTOPhase::FullLTOPostLink, PGOOpt->FS);
-		  }
+          if (PGOOpt) {
+            if (PGOOpt->CSAction == PGOOptions::CSIRInstr)
+              addPGOInstrPasses(MPM, Level, /* RunProfileGen */ true,
+                                /* IsCS */ true, PGOOpt->CSProfileGenFile,
+                                PGOOpt->ProfileRemappingFile,
+                                ThinOrFullLTOPhase::FullLTOPostLink, PGOOpt->FS);
+            else if (PGOOpt->CSAction == PGOOptions::CSIRUse)
+              addPGOInstrPasses(MPM, Level, /* RunProfileGen */ false,
+                                /* IsCS */ true, PGOOpt->ProfileFile,
+                                PGOOpt->ProfileRemappingFile,
+                                ThinOrFullLTOPhase::FullLTOPostLink, PGOOpt->FS);
+          }
 #endif
 
     // Break up allocas
