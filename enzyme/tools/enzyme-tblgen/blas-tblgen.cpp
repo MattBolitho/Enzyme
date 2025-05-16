@@ -1041,7 +1041,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
       }
       os << "SmallVector<Value *, 1>vs = { to_blas_callconv(Builder2, res, "
             "byRef, cublas, julia_decl_type, allocationBuilder, \""
-         << Def->getName() << "." << name << "\") }; return vs; }();";
+         << Def->getName() << "." << name << "\") }; return vs; }()";
       return;
     }
     if (Def->isSubClassOf("Binop")) {
@@ -1090,7 +1090,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
            << Def->getValueAsString("s") << "\" )";
       else
         os << ")";
-      os << ");\n }\n return vals; }();";
+      os << ");\n }\n return vals; }()";
       return;
     }
     if (Def->isSubClassOf("BIntrinsic")) {
@@ -1126,7 +1126,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
       os << ", byRef, cublas, julia_decl_type, "
             "allocationBuilder, \""
          << Def->getValueAsString("s") << "\" )";
-      os << ");\n return vals; }();";
+      os << ");\n return vals; }()";
       return;
     }
     if (Def->isSubClassOf("BlasCall")) {
@@ -1173,7 +1173,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
          << "         resvec[0] = to_blas_fp_callconv(Builder2, resvec[0], "
             "byRefFloat, blasFPType, allocationBuilder, \"blascall\");\n"
          << "         return resvec;\n";
-      os << " }();\n";
+      os << " }()\n";
       return;
     }
     if (Def->getName() == "FirstUse" || Def->isSubClassOf("FirstUse")) {
@@ -1191,7 +1191,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
       os << "first_use_" << Def->getValueAsString("var")
          << " = Builder2.getFalse();\n";
 
-      os << " return vals; }();";
+      os << " return vals; }()";
       return;
     }
     if (Def->getName() == "First") {
@@ -1202,7 +1202,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
         rev_call_arg(forward, Dag, pattern, 0, os, vars);
         os << " ) { sarg.push_back(tmp); break; }\n";
       }
-      os << " return sarg; }();";
+      os << " return sarg; }()";
       return;
     }
     if (Def->getName() == "Lookup" || Def->getName() == "LoadLookup") {
@@ -1254,7 +1254,7 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
       } else {
         os << "  SmallVector<Value*, 1> vals = { ptr, larg_1[1] };\n";
       }
-      os << "return vals; }();";
+      os << "return vals; }()";
       return;
     }
 
