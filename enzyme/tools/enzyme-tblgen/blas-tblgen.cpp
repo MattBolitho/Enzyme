@@ -1005,11 +1005,11 @@ void rev_call_arg(bool forward, const DagInit *ruleDag,
       if (Def->getValueAsBit("asserting")) {
         os << "            [&](){std::string s;\n";
         os << "            llvm::raw_string_ostream ss(s);\n";
-        os << "            ss << \"in Mode: \" << to_string(Mode) << "
+        os << "            ss << \"in Mode: \" << to_string(this->Mode) << "
               "\"\\n\";\n";
         os << "            ss << \"cannot handle blas argument within "
            << pattern.getName() << " of \" << call;\n";
-        os << "            EmitNoDerivativeError(ss.str(), call, gutils, "
+        os << "            EmitNoDerivativeError(ss.str(), call, this->gutils, "
               "Builder2);\n";
         os << "            return ArrayRef<Value*>(); }()";
       }
@@ -1670,10 +1670,10 @@ void emit_dag(bool forward, Twine resultVarName, const DagInit *ruleDag,
     if (Def->getValueAsBit("asserting")) {
       os << "            std::string s;\n";
       os << "            llvm::raw_string_ostream ss(s);\n";
-      os << "            ss << \"in Mode: \" << to_string(Mode) << \"\\n\";\n";
+      os << "            ss << \"in Mode: \" << to_string(this->Mode) << \"\\n\";\n";
       os << "            ss << \"cannot handle blas argument " << argName
          << " within " << pattern.getName() << " of \" << call;\n";
-      os << "            EmitNoDerivativeError(ss.str(), call, gutils, "
+      os << "            EmitNoDerivativeError(ss.str(), call, this->gutils, "
             "Builder2);\n";
     }
     return;
